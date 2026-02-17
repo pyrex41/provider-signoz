@@ -2,7 +2,7 @@
 # Setup Project
 
 PROJECT_NAME ?= provider-signoz
-PROJECT_REPO ?= github.com/facilitygrid/$(PROJECT_NAME)
+PROJECT_REPO ?= github.com/pyrex41/$(PROJECT_NAME)
 
 export TERRAFORM_VERSION ?= 1.5.7
 
@@ -65,17 +65,17 @@ CROSSPLANE_VERSION = 2.1.3
 # ====================================================================================
 # Setup Images
 
-REGISTRY_ORGS ?= ghcr.io/crossplane-contrib
+REGISTRY_ORGS ?= ghcr.io/pyrex41
 IMAGES = $(PROJECT_NAME)
 -include build/makelib/imagelight.mk
 
 # ====================================================================================
 # Setup XPKG
 
-XPKG_REG_ORGS ?= ghcr.io/crossplane-contrib
+XPKG_REG_ORGS ?= ghcr.io/pyrex41
 # NOTE(hasheddan): skip promoting on xpkg.crossplane.io as channel tags are
 # inferred.
-XPKG_REG_ORGS_NO_PROMOTE ?= ghcr.io/crossplane-contrib
+XPKG_REG_ORGS_NO_PROMOTE ?= ghcr.io/pyrex41
 XPKGS = $(PROJECT_NAME)
 -include build/makelib/xpkg.mk
 
