@@ -62,16 +62,13 @@ jobs:
       - name: Vendor Dependencies
         run: make vendor vendor.check
 
-      - name: Build Artifacts
+      - name: Build Go Binaries
         run: |
           make -j \
-            REGISTRY_ORGS="${{ env.GHCR_REGISTRY }}" \
-            XPKG_REG_ORGS="${{ env.GHCR_REGISTRY }}" \
-            XPKG_REG_ORGS_NO_PROMOTE="${{ env.GHCR_REGISTRY }}" \
             VERSION=${{ inputs.version }} \
-            build xpkg.build
+            build
 
-      - name: Publish Artifacts
+      - name: Build and Publish xpkg
         run: |
           make -j \
             REGISTRY_ORGS="${{ env.GHCR_REGISTRY }}" \
@@ -79,4 +76,4 @@ jobs:
             XPKG_REG_ORGS_NO_PROMOTE="${{ env.GHCR_REGISTRY }}" \
             BRANCH_NAME="main" \
             VERSION=${{ inputs.version }} \
-            publish
+            xpkg.build publish
