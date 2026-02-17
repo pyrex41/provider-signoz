@@ -2,7 +2,7 @@
 # Setup Project
 
 PROJECT_NAME ?= provider-signoz
-PROJECT_REPO ?= github.com/pyrex41/$(PROJECT_NAME)
+PROJECT_REPO ?= github.com/facilitygrid/$(PROJECT_NAME)
 
 export TERRAFORM_VERSION ?= 1.5.7
 
