@@ -1,40 +1,141 @@
-name: hashicorp/null
+name: SigNoz/signoz
 resources:
-    null_resource:
+    signoz_alert:
         subCategory: ""
-        description: The null_resource resource implements the standard resource lifecycle but takes no further action. On Terraform 1.4 and later, use the terraform_data resource type https://developer.hashicorp.com/terraform/language/resources/terraform-data instead. Terraform 1.9 and later support the moved configuration block from null_resource to terraform_data. The triggers argument allows specifying an arbitrary set of values that, when changed, will cause the resource to be replaced.
-        name: null_resource
-        title: null_resource Resource - terraform-provider-null
+        description: Creates and manages alert resources in SigNoz.
+        name: signoz_alert
+        title: signoz_alert Resource - signoz
         examples:
-            - name: cluster
+            - name: new_alert
               manifest: |-
                 {
-                  "connection": [
-                    {
-                      "host": "${element(aws_instance.cluster[*].public_ip, 0)}"
-                    }
-                  ],
-                  "provisioner": {
-                    "remote-exec": [
-                      {
-                        "inline": [
-                          "bootstrap-cluster.sh ${join(\" \",\n      aws_instance.cluster[*].private_ip)}"
-                        ]
-                      }
-                    ]
+                  "alert": "TF Test Alert",
+                  "alert_type": "METRIC_BASED_ALERT",
+                  "broadcast_to_all": false,
+                  "condition": "${jsonencode(\n    {\n      absentFor     = 10\n      alertOnAbsent = true\n      compositeQuery = {\n        builderQueries = {\n          A = {\n            IsAnomaly            = false\n            QueriesUsedInFormula = null\n            ShiftBy              = 0\n            aggregateAttribute = {\n              dataType = \"float64\"\n              isColumn = true\n              isJSON   = false\n              key      = \"k8s_node_memory_rss\"\n              type     = \"Gauge\"\n            }\n            aggregateOperator = \"avg\"\n            dataSource        = \"metrics\"\n            disabled          = false\n            expression        = \"A\"\n            filters = {\n              items = []\n              op    = \"AND\"\n            }\n            groupBy = [\n              {\n                dataType = \"string\"\n                isColumn = false\n                isJSON   = false\n                key      = \"k8s_node_name\"\n                type     = \"tag\"\n              },\n            ]\n            limit            = 0\n            offset           = 0\n            pageSize         = 0\n            queryName        = \"A\"\n            reduceTo         = \"avg\"\n            spaceAggregation = \"avg\"\n            stepInterval     = 60\n            timeAggregation  = \"avg\"\n          }\n        }\n        chQueries = {\n          A = {\n            disabled = false\n            query    = \"\"\n          }\n        }\n        panelType = \"graph\"\n        promQueries = {\n          A = {\n            disabled = false\n            query    = \"\"\n          }\n        }\n        queryType = \"builder\"\n        unit      = \"bytes\"\n      }\n      matchType         = \"1\"\n      op                = \"1\"\n      selectedQueryName = \"A\"\n      target            = 10\n      targetUnit        = \"gbytes\"\n    }\n  )}",
+                  "description": "Alert is fired when the defined metric (current value: {{$value}}) crosses the threshold ({{$threshold}})",
+                  "eval_window": "5m0s",
+                  "frequency": "1m0s",
+                  "labels": {
+                    "observer": "local-test"
                   },
-                  "triggers": {
-                    "cluster_instance_ids": "${join(\",\", aws_instance.cluster[*].id)}"
-                  }
+                  "preferred_channels": [
+                    "alert-test-terraform"
+                  ],
+                  "rule_type": "threshold_rule",
+                  "severity": "info",
+                  "version": "v4"
                 }
-              dependencies:
-                aws_instance.cluster: |-
-                    {
-                      "ami": "ami-0dcc1e21636832c5d",
-                      "count": 3,
-                      "instance_type": "m5.large"
-                    }
+            - name: new_alert_v2
+              manifest: |-
+                {
+                  "alert": "new alert with v2 schema",
+                  "alert_type": "LOGS_BASED_ALERT",
+                  "broadcast_to_all": false,
+                  "condition": "${jsonencode({\n    compositeQuery = {\n      queries = [\n        {\n          type = \"builder_query\"\n          spec = {\n            name         = \"A\"\n            stepInterval = 0\n            signal       = \"logs\"\n            source       = \"\"\n            aggregations = [\n              {\n                expression = \"count()\"\n              }\n            ]\n            filter = {\n              expression = \"\"\n            }\n            having = {\n              expression = \"\"\n            }\n          }\n        }\n      ]\n      panelType = \"graph\"\n      queryType = \"builder\"\n    }\n    selectedQueryName = \"A\"\n    thresholds = {\n      kind = \"basic\"\n      spec = [\n        {\n          name           = \"critical\"\n          target         = 100\n          targetUnit     = \"\"\n          recoveryTarget = null\n          matchType      = \"1\"\n          op             = \"1\"\n          channels       = [\"alert-test-terraform\"]\n        },\n        {\n          name           = \"warning\"\n          target         = 50\n          targetUnit     = \"\"\n          recoveryTarget = null\n          matchType      = \"1\"\n          op             = \"1\"\n          channels       = [\"alert-test-terraform\"]\n        }\n      ]\n    }\n  })}",
+                  "description": "This alert is fired when log count crosses the threshold (current: {{$value}}, threshold: {{$threshold}})",
+                  "disabled": false,
+                  "eval_window": "5m0s",
+                  "evaluation": "${jsonencode({\n    kind = \"rolling\"\n    spec = {\n      evalWindow = \"35m0s\"\n      frequency  = \"1m0s\"\n    }\n  })}",
+                  "frequency": "1m0s",
+                  "labels": {
+                    "team": "platform"
+                  },
+                  "notification_settings": {
+                    "group_by": [
+                      "container.id"
+                    ],
+                    "renotify": {
+                      "alert_states": [
+                        "nodata",
+                        "firing"
+                      ],
+                      "enabled": true,
+                      "interval": "25m0s"
+                    },
+                    "use_policy": true
+                  },
+                  "preferred_channels": [
+                    "alert-test-terraform"
+                  ],
+                  "rule_type": "threshold_rule",
+                  "schema_version": "v2alpha1",
+                  "severity": "critical",
+                  "summary": "Log count alert triggered",
+                  "version": "v5"
+                }
         argumentDocs:
-            id: (String) This is set to a random value at create time.
-            triggers: (Map of String) A map of arbitrary strings that, when changed, will force the null resource to be replaced, re-running any associated provisioners.
+            alert: (String) Name of the alert.
+            alert_states: '(List of String) List of alert states to trigger renotification. Possible values are: firing, nodata.'
+            alert_type: '(String) Type of the alert. Possible values are: METRIC_BASED_ALERT, LOGS_BASED_ALERT, TRACES_BASED_ALERT, and EXCEPTIONS_BASED_ALERT.'
+            broadcast_to_all: '(Boolean) Whether to broadcast the alert to all the alerting channels. By default, the alert is only sent to the preferred channels. Deprecated: This field is no longer needed and will be ignored.'
+            condition: (String) Condition of the alert.
+            create_at: (String) Creation time of the alert.
+            create_by: (String) Creator of the alert.
+            description: (String) Description of the alert.
+            disabled: (Boolean) Whether the alert is disabled.
+            enabled: (Boolean) Whether renotify is enabled.
+            eval_window: (String) The evaluation window of the alert. By default, it is 5m0s.
+            evaluation: (String) Evaluation configuration of the alert as JSON. Only used when schema_version is v2 or higher.
+            frequency: (String) The frequency of the alert. By default, it is 1m0s.
+            group_by: (List of String) List of labels to group notifications by, use 'all' to get different notification for each unique parameters.
+            id: (String) Autogenerated unique ID for the alert.
+            interval: (String) Renotification interval (e.g., "25m0s"). By default, it is empty.
+            labels: (Map of String) Labels of the alert. Severity is a required label.
+            notification_settings: (Attributes) Notification settings for the alert. Only used when schema_version is v2 or higher. (see below for nested schema)
+            preferred_channels: (List of String) Preferred channels of the alert. By default, it is empty.
+            renotify: (Attributes) Renotify settings for the alert. (see below for nested schema)
+            rule_type: '(String) Type of the alert. Possible values are: threshold_rule and promql_rule.'
+            schema_version: (String) Schema version of the alert. By default, it is v1. For v2+ schemas, additional fields like evaluation and notification_settings are supported.
+            severity: '(String) Severity of the alert. Possible values are: info, warning, error, and critical.'
+            source: (String) Source of the alert. By default, it is <SIGNOZ_ENDPOINT>/alerts.
+            state: (String) State of the alert.
+            summary: (String) Summary of the alert.
+            update_at: (String) Last update time of the alert.
+            update_by: (String) Last updater of the alert.
+            use_policy: (Boolean) Whether to use notification policy. By default, it is false.
+            version: (String) Version of the alert. By default, it is v4.
+        importStatements: []
+    signoz_dashboard:
+        subCategory: ""
+        description: Creates and manages dashboard resources in SigNoz.
+        name: signoz_dashboard
+        title: signoz_dashboard Resource - signoz
+        examples:
+            - name: new_dashboard
+              manifest: |-
+                {
+                  "collapsable_rows_migrated": true,
+                  "description": "test1",
+                  "layout": "${jsonencode([\n    {\n      \"h\" : 8,\n      \"i\" : \"c5f29b09-8a63-44ba-825f-db91a3c79a54\",\n      \"moved\" : false,\n      \"static\" : false,\n      \"w\" : 6,\n      \"x\" : 0,\n      \"y\" : 0\n    },\n  ])}",
+                  "name": "test1",
+                  "panel_map": "${jsonencode(\n    {\n      \"94c3ba3e-b5de-49da-8a4d-f4572585d2e6\" : {\n        \"collapsed\" : false,\n        \"widgets\" : [\n          {\n            \"h\" : 6,\n            \"i\" : \"3d74094e-241b-4560-9128-abb1af79ae3c\",\n            \"moved\" : false,\n            \"static\" : false,\n            \"w\" : 6,\n            \"x\" : 0,\n            \"y\" : 172\n          },\n          {\n            \"h\" : 6,\n            \"i\" : \"9a8ac524-afe4-457a-b17a-45f11c4f0fcf\",\n            \"moved\" : false,\n            \"static\" : false,\n            \"w\" : 6,\n            \"x\" : 6,\n            \"y\" : 172\n          },\n          {\n            \"h\" : 6,\n            \"i\" : \"f42a3a42-8099-4be9-a6b5-1528d1f1bdfa\",\n            \"moved\" : false,\n            \"static\" : false,\n            \"w\" : 6,\n            \"x\" : 0,\n            \"y\" : 178\n          },\n          {\n            \"h\" : 6,\n            \"i\" : \"e796af4a-abe8-4ff4-9bba-0b7eb81c022a\",\n            \"moved\" : false,\n            \"static\" : false,\n            \"w\" : 6,\n            \"x\" : 6,\n            \"y\" : 178\n          },\n          {\n            \"h\" : 6,\n            \"i\" : \"9abc2374-d1ef-4ad6-958b-2355addcb245\",\n            \"moved\" : false,\n            \"static\" : false,\n            \"w\" : 12,\n            \"x\" : 0,\n            \"y\" : 184\n          }\n        ]\n      },\n    }\n  )}",
+                  "tags": [
+                    "node",
+                    "kubelet"
+                  ],
+                  "title": "test1",
+                  "uploaded_grafana": false,
+                  "variables": "${jsonencode(\n    {\n      \"8ccae12a-9f04-4d27-8940-374446050530\" : {\n        \"customValue\" : \"\",\n        \"description\" : \"The k8s node name\",\n        \"id\" : \"8ccae12a-9f04-4d27-8940-374446050530\",\n        \"modificationUUID\" : \"4f18b48e-0d06-4f63-88fb-2299ca8a7b1f\",\n        \"multiSelect\" : true,\n        \"name\" : \"k8s_node_name\",\n        \"order\" : 1,\n        \"queryValue\" : \"SELECT JSONExtractString(labels, 'k8s_node_name') AS k8s_node_name\\nFROM signoz_metrics.distributed_time_series_v4_1day\\nWHERE metric_name = 'k8s_node_cpu_time' AND JSONExtractString(labels, 'k8s_cluster_name') = {{.k8s_cluster_name}}\\nGROUP BY k8s_node_name\",\n        \"showALLOption\" : true,\n        \"sort\" : \"ASC\",\n        \"textboxValue\" : \"\",\n        \"type\" : \"QUERY\",\n        \"selectedValue\" : [\"default\"],\n        \"allSelected\" : false\n      },\n    }\n  )}",
+                  "version": "v4",
+                  "widgets": "${jsonencode([\n    {\n      \"bucketCount\" : 30,\n      \"bucketWidth\" : 0,\n      \"columnUnits\" : {},\n      \"description\" : \"\",\n      \"fillSpans\" : false,\n      \"id\" : \"c5f29b09-8a63-44ba-825f-db91a3c79a54\",\n      \"isStacked\" : false,\n      \"mergeAllActiveQueries\" : false,\n      \"nullZeroValues\" : \"zero\",\n      \"opacity\" : \"1\",\n      \"panelTypes\" : \"graph\",\n      \"query\" : {\n        \"builder\" : {\n          \"queryData\" : [\n            {\n              \"aggregateAttribute\" : {\n                \"dataType\" : \"float64\",\n                \"id\" : \"k8s_node_cpu_utilization--float64--Gauge--true\",\n                \"isColumn\" : true,\n                \"isJSON\" : false,\n                \"key\" : \"k8s_node_cpu_utilization\",\n                \"type\" : \"Gauge\"\n              },\n              \"aggregateOperator\" : \"avg\",\n              \"dataSource\" : \"metrics\",\n              \"disabled\" : false,\n              \"expression\" : \"A\",\n              \"filters\" : {\n                \"items\" : [\n                  {\n                    \"id\" : \"4995e999\",\n                    \"key\" : {\n                      \"dataType\" : \"string\",\n                      \"id\" : \"k8s_cluster_name--string--tag--false\",\n                      \"isColumn\" : false,\n                      \"key\" : \"k8s_cluster_name\",\n                      \"type\" : \"tag\"\n                    },\n                    \"op\" : \"=\",\n                    \"value\" : \"{{.k8s_cluster_name}}\"\n                  },\n                  {\n                    \"id\" : \"14a0fa64\",\n                    \"key\" : {\n                      \"dataType\" : \"string\",\n                      \"id\" : \"k8s_node_name--string--tag--false\",\n                      \"isColumn\" : false,\n                      \"key\" : \"k8s_node_name\",\n                      \"type\" : \"tag\"\n                    },\n                    \"op\" : \"in\",\n                    \"value\" : [\n                      \"{{.k8s_node_name}}\"\n                    ]\n                  }\n                ],\n                \"op\" : \"AND\"\n              },\n              \"functions\" : [],\n              \"groupBy\" : [\n                {\n                  \"dataType\" : \"string\",\n                  \"id\" : \"k8s_node_name--string--tag--false\",\n                  \"isColumn\" : false,\n                  \"isJSON\" : false,\n                  \"key\" : \"k8s_node_name\",\n                  \"type\" : \"tag\"\n                }\n              ],\n              \"having\" : [],\n              \"legend\" : \"{{k8s_node_name}}\",\n              \"limit\" : null,\n              \"orderBy\" : [],\n              \"queryName\" : \"A\",\n              \"reduceTo\" : \"sum\",\n              \"spaceAggregation\" : \"sum\",\n              \"stepInterval\" : 60,\n              \"timeAggregation\" : \"avg\"\n            }\n          ],\n          \"queryFormulas\" : []\n        },\n        \"clickhouse_sql\" : [\n          {\n            \"disabled\" : false,\n            \"legend\" : \"\",\n            \"name\" : \"A\",\n            \"query\" : \"\"\n          }\n        ],\n        \"id\" : \"6c8b0b46-1bd5-49aa-a4f9-0e4fd4636eaa\",\n        \"promql\" : [\n          {\n            \"disabled\" : false,\n            \"legend\" : \"\",\n            \"name\" : \"A\",\n            \"query\" : \"\"\n          }\n        ],\n        \"queryType\" : \"builder\"\n      },\n      \"selectedLogFields\" : [],\n      \"selectedTracesFields\" : [],\n      \"softMax\" : 0,\n      \"softMin\" : 0,\n      \"stackedBarChart\" : false,\n      \"thresholds\" : [],\n      \"timePreferance\" : \"GLOBAL_TIME\",\n      \"title\" : \"Node CPU usage\",\n      \"yAxisUnit\" : \"none\"\n    },\n  ])}"
+                }
+        argumentDocs:
+            collapsable_rows_migrated: (Boolean)
+            created_at: (String) Creation time of the dashboard.
+            created_by: (String) Creator of the dashboard.
+            description: (String) Description of the dashboard.
+            id: (String) Autogenerated unique ID for the dashboard.
+            layout: (String) Layout of the dashboard.
+            name: (String) Name of the dashboard.
+            panel_map: (String)
+            source: (String) Source of the dashboard. By default, it is <SIGNOZ_ENDPOINT>/dashboard.
+            tags: (List of String) Tags of the dashboard.
+            title: (String) Title of the dashboard.
+            updated_at: (String) Last update time of the dashboard.
+            updated_by: (String) Last updater of the dashboard.
+            uploaded_grafana: (Boolean)
+            variables: (String) Variables for the dashboard.
+            version: (String) Version of the dashboard.
+            widgets: (String) Widgets for the dashboard.
         importStatements: []

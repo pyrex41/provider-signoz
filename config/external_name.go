@@ -7,17 +7,17 @@ import (
 // ExternalNameConfigs contains all external name configurations for this
 // provider.
 var ExternalNameConfigs = map[string]config.ExternalName{
-	// Import requires using a randomly generated ID from provider: nl-2e21sda
-	"null_resource": idWithStub(),
+	// SigNoz dashboard uses provider-assigned IDs (UUID from API)
+	"signoz_dashboard": config.IdentifierFromProvider,
+	// SigNoz alert uses provider-assigned IDs (integer from API)
+	"signoz_alert": config.IdentifierFromProvider,
 }
 
-func idWithStub() config.ExternalName {
-	e := config.IdentifierFromProvider
-	e.GetExternalNameFn = func(tfstate map[string]any) (string, error) {
-		en, _ := config.IDAsExternalName(tfstate)
-		return en, nil
-	}
-	return e
+// TerraformPluginFrameworkExternalNameConfigs is for providers using
+// terraform-plugin-framework (not SDK). The SigNoz provider uses framework.
+var TerraformPluginFrameworkExternalNameConfigs = map[string]config.ExternalName{
+	"signoz_dashboard": config.IdentifierFromProvider,
+	"signoz_alert":     config.IdentifierFromProvider,
 }
 
 // ExternalNameConfigurations applies all external name configs listed in the
