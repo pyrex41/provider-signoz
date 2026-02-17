@@ -68,12 +68,21 @@ jobs:
             VERSION=${{ inputs.version }} \
             build
 
-      - name: Build and Publish xpkg
+      - name: Build xpkg
         run: |
-          make -j \
+          make \
+            REGISTRY_ORGS="${{ env.GHCR_REGISTRY }}" \
+            XPKG_REG_ORGS="${{ env.GHCR_REGISTRY }}" \
+            XPKG_REG_ORGS_NO_PROMOTE="${{ env.GHCR_REGISTRY }}" \
+            VERSION=${{ inputs.version }} \
+            xpkg.build
+
+      - name: Publish xpkg
+        run: |
+          make \
             REGISTRY_ORGS="${{ env.GHCR_REGISTRY }}" \
             XPKG_REG_ORGS="${{ env.GHCR_REGISTRY }}" \
             XPKG_REG_ORGS_NO_PROMOTE="${{ env.GHCR_REGISTRY }}" \
             BRANCH_NAME="main" \
             VERSION=${{ inputs.version }} \
-            xpkg.build publish
+            publish
