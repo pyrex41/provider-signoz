@@ -11,11 +11,11 @@ export TERRAFORM_VERSION ?= 1.5.7
 TERRAFORM_VERSION_VALID := $(shell [ "$(TERRAFORM_VERSION)" = "`printf "$(TERRAFORM_VERSION)\n1.6" | sort -V | head -n1`" ] && echo 1 || echo 0)
 
 export TERRAFORM_PROVIDER_SOURCE ?= SigNoz/signoz
-export TERRAFORM_PROVIDER_REPO ?= https://github.com/SigNoz/terraform-provider-signoz
-export TERRAFORM_PROVIDER_VERSION ?= 0.0.11
+export TERRAFORM_PROVIDER_REPO ?= https://github.com/pyrex41/terraform-provider-signoz
+export TERRAFORM_PROVIDER_VERSION ?= 0.0.12-rc1
 export TERRAFORM_PROVIDER_DOWNLOAD_NAME ?= terraform-provider-signoz
-export TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX ?= https://github.com/SigNoz/terraform-provider-signoz/releases/download/v$(TERRAFORM_PROVIDER_VERSION)
-export TERRAFORM_NATIVE_PROVIDER_BINARY ?= terraform-provider-signoz_v0.0.11
+export TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX ?= https://github.com/pyrex41/terraform-provider-signoz/releases/download/v$(TERRAFORM_PROVIDER_VERSION)
+export TERRAFORM_NATIVE_PROVIDER_BINARY ?= terraform-provider-signoz_v0.0.12-rc1
 export TERRAFORM_DOCS_PATH ?= docs/resources
 
 
