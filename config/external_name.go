@@ -4,20 +4,40 @@ import (
 	"github.com/crossplane/upjet/v2/pkg/config"
 )
 
+// safeIdentifierFromProvider is like config.IdentifierFromProvider but
+// returns ("", nil) instead of error when id is missing/empty in tfstate.
+// This works around an upjet v2.2.0 bug where the framework client's
+// setExternalName() doesn't guard against empty id before calling
+// GetExternalNameFn (unlike the SDK client which does).
+var safeIdentifierFromProvider = config.ExternalName{
+	SetIdentifierArgumentFn: config.IdentifierFromProvider.SetIdentifierArgumentFn,
+	GetExternalNameFn: func(tfstate map[string]any) (string, error) {
+		id, ok := tfstate["id"].(string)
+		if !ok || id == "" {
+			return "", nil
+		}
+		return id, nil
+	},
+	GetIDFn:                config.IdentifierFromProvider.GetIDFn,
+	OmittedFields:          config.IdentifierFromProvider.OmittedFields,
+	DisableNameInitializer: config.IdentifierFromProvider.DisableNameInitializer,
+	IdentifierFields:       config.IdentifierFromProvider.IdentifierFields,
+}
+
 // ExternalNameConfigs contains all external name configurations for this
 // provider.
 var ExternalNameConfigs = map[string]config.ExternalName{
 	// SigNoz dashboard uses provider-assigned IDs (UUID from API)
-	"signoz_dashboard": config.IdentifierFromProvider,
+	"signoz_dashboard": safeIdentifierFromProvider,
 	// SigNoz alert uses provider-assigned IDs (integer from API)
-	"signoz_alert": config.IdentifierFromProvider,
+	"signoz_alert": safeIdentifierFromProvider,
 }
 
 // TerraformPluginFrameworkExternalNameConfigs is for providers using
 // terraform-plugin-framework (not SDK). The SigNoz provider uses framework.
 var TerraformPluginFrameworkExternalNameConfigs = map[string]config.ExternalName{
-	"signoz_dashboard": config.IdentifierFromProvider,
-	"signoz_alert":     config.IdentifierFromProvider,
+	"signoz_dashboard": safeIdentifierFromProvider,
+	"signoz_alert":     safeIdentifierFromProvider,
 }
 
 // ExternalNameConfigurations applies all external name configs listed in the
