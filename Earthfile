@@ -6,33 +6,32 @@ ARG --global TERRAFORM_PROVIDER_VERSION=0.0.12-rc1
 ARG --global TERRAFORM_PROVIDER_DOWNLOAD_NAME=terraform-provider-signoz
 ARG --global TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX=https://github.com/pyrex41/terraform-provider-signoz/releases/download/v${TERRAFORM_PROVIDER_VERSION}
 ARG --global TERRAFORM_NATIVE_PROVIDER_BINARY=terraform-provider-signoz_v${TERRAFORM_PROVIDER_VERSION}
-ARG --global IMAGE_REPO=ghcr.io/pyrex41/provider-signoz
-ARG --global IMAGE_TAG=v0.2.0
-
-go-mod:
-    FROM golang:1.24-alpine
-    WORKDIR /src
-    COPY go.mod go.sum ./
-    RUN go mod download
-    SAVE ARTIFACT go.mod
+ARG --global REGISTRY=ghcr.io/pyrex41
+ARG --global VERSION=v0.2.1
 
 build:
-    FROM golang:1.24-alpine
+    ARG BUILDPLATFORM
+    ARG GOOS=linux
+    ARG GOARCH
+    FROM --platform=$BUILDPLATFORM golang:1.24-alpine
     WORKDIR /src
     COPY go.mod go.sum ./
     RUN go mod download
     COPY . .
-    ARG GOOS=linux
-    ARG GOARCH=amd64
     ENV CGO_ENABLED=0
-    RUN go build -trimpath -o /out/provider ./cmd/provider
+    RUN GOOS=${GOOS} GOARCH=${GOARCH} go build \
+        -ldflags="-s -w" \
+        -trimpath \
+        -o /out/provider ./cmd/provider
     SAVE ARTIFACT /out/provider
 
+# Controller runtime image — pushed separately, referenced by package/crossplane.yaml
 image:
+    ARG TARGETPLATFORM
+    ARG TARGETOS
+    ARG TARGETARCH
     FROM alpine:3.23.2
     RUN apk --no-cache add ca-certificates bash
-    ARG TARGETARCH
-    ARG TARGETOS
     ENV USER_ID=65532
 
     COPY (+build/provider --GOOS=${TARGETOS} --GOARCH=${TARGETARCH}) /usr/local/bin/provider
@@ -43,14 +42,12 @@ image:
 
     RUN mkdir -p ${PLUGIN_DIR}
 
-    # Download terraform
     RUN wget -q -O /tmp/terraform.zip \
         https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_${TARGETOS}_${TARGETARCH}.zip \
         && unzip /tmp/terraform.zip -d /usr/local/bin \
         && chmod +x /usr/local/bin/terraform \
         && rm /tmp/terraform.zip
 
-    # Download terraform-provider-signoz from fork release
     RUN wget -q -O /tmp/provider.zip \
         ${TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX}/${TERRAFORM_PROVIDER_DOWNLOAD_NAME}_${TERRAFORM_PROVIDER_VERSION}_${TARGETOS}_${TARGETARCH}.zip \
         && unzip /tmp/provider.zip -d ${PLUGIN_DIR} \
@@ -69,7 +66,78 @@ image:
     EXPOSE 8080
     ENTRYPOINT ["provider"]
 
-    SAVE IMAGE --push ${IMAGE_REPO}:${IMAGE_TAG}
+    SAVE IMAGE --push ${REGISTRY}/provider-signoz:${VERSION}-${TARGETARCH}
 
-all:
-    BUILD --platform=linux/amd64 --platform=linux/arm64 +image
+# Build and push arch-specific controller images
+push-images:
+    ARG VERSION=$VERSION
+    BUILD --platform=linux/amd64 --platform=linux/arm64 +image --VERSION=$VERSION
+    FROM alpine:3.23.2
+    RUN echo "Images pushed at $(date)" > /tmp/push-complete
+    SAVE ARTIFACT /tmp/push-complete push-complete
+
+# Create multi-arch manifest from pushed arch-specific images
+create-manifest:
+    ARG VERSION=$VERSION
+    ARG GITHUB_USER=pyrex41
+    FROM alpine:3.23.2
+    RUN apk --no-cache add docker-cli docker-cli-buildx
+
+    # Wait for push-images to complete
+    COPY +push-images/push-complete /tmp/push-complete
+
+    RUN --secret GITHUB_TOKEN \
+        echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_USER" --password-stdin
+
+    RUN docker buildx imagetools create \
+        -t ${REGISTRY}/provider-signoz:${VERSION} \
+        -t ${REGISTRY}/provider-signoz:latest \
+        ${REGISTRY}/provider-signoz:${VERSION}-amd64 \
+        ${REGISTRY}/provider-signoz:${VERSION}-arm64
+
+# Build metadata-only xpkg (CRDs + crossplane.yaml, no embedded runtime).
+# Controller image is referenced via spec.controller.image in crossplane.yaml.
+package-build:
+    FROM golang:1.24-alpine
+    RUN apk --no-cache add curl
+    # Install crossplane CLI
+    RUN curl -fsSL "https://releases.crossplane.io/stable/v2.1.3/bin/linux_$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/')/crank" \
+        -o /usr/local/bin/crossplane \
+        && chmod +x /usr/local/bin/crossplane
+    WORKDIR /work
+    COPY package/ package/
+    RUN crossplane xpkg build \
+        --package-root=package \
+        -o package.xpkg
+    SAVE ARTIFACT package.xpkg
+
+# Push everything: controller images + multi-arch manifest + xpkg
+push:
+    ARG VERSION=$VERSION
+    ARG GITHUB_USER=pyrex41
+    ARG XPKG_TAG=xpkg
+
+    # Step 1: Push arch-specific controller images
+    BUILD +push-images --VERSION=$VERSION
+
+    # Step 2: Create multi-arch manifest
+    BUILD +create-manifest --VERSION=$VERSION --GITHUB_USER=$GITHUB_USER
+
+    # Step 3: Build and push metadata-only xpkg
+    FROM alpine:3.23.2
+    RUN apk --no-cache add docker-cli curl
+    RUN curl -fsSL "https://releases.crossplane.io/stable/v2.1.3/bin/linux_$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/')/crank" \
+        -o /usr/local/bin/crossplane \
+        && chmod +x /usr/local/bin/crossplane
+
+    COPY +package-build/package.xpkg /tmp/provider-signoz-package.xpkg
+
+    RUN --secret GITHUB_TOKEN \
+        echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_USER" --password-stdin
+
+    RUN crossplane xpkg push -f /tmp/provider-signoz-package.xpkg ${REGISTRY}/provider-signoz:${XPKG_TAG}
+
+# Quick local build (amd64 only, no push)
+package-local:
+    BUILD +image --TARGETARCH=amd64
+    BUILD +package-build
