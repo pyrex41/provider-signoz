@@ -1,7 +1,7 @@
-apiVersion: meta.pkg.crossplane.io/v1
+apiVersion: meta.pkg.crossplane.io/v1alpha1
 kind: Provider
 metadata:
   name: provider-signoz
 spec:
   controller:
-    image: ghcr.io/pyrex41/provider-signoz:v0.2.1
+    image: ghcr.io/pyrex41/provider-signoz:v0.2.2

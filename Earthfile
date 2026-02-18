@@ -2,12 +2,12 @@ VERSION 0.8
 
 ARG --global TERRAFORM_VERSION=1.5.7
 ARG --global TERRAFORM_PROVIDER_SOURCE=SigNoz/signoz
-ARG --global TERRAFORM_PROVIDER_VERSION=0.0.12-rc1
+ARG --global TERRAFORM_PROVIDER_VERSION=0.0.12-rc2
 ARG --global TERRAFORM_PROVIDER_DOWNLOAD_NAME=terraform-provider-signoz
 ARG --global TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX=https://github.com/pyrex41/terraform-provider-signoz/releases/download/v${TERRAFORM_PROVIDER_VERSION}
 ARG --global TERRAFORM_NATIVE_PROVIDER_BINARY=terraform-provider-signoz_v${TERRAFORM_PROVIDER_VERSION}
 ARG --global REGISTRY=ghcr.io/pyrex41
-ARG --global VERSION=v0.2.1
+ARG --global VERSION=v0.2.2
 
 build:
     ARG BUILDPLATFORM
@@ -135,6 +135,20 @@ push:
     RUN --secret GITHUB_TOKEN \
         echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_USER" --password-stdin
 
+    RUN crossplane xpkg push -f /tmp/provider-signoz-package.xpkg ${REGISTRY}/provider-signoz:${XPKG_TAG}
+
+# Push just the xpkg (when controller images are already pushed)
+xpkg-push:
+    ARG GITHUB_USER=pyrex41
+    ARG XPKG_TAG=xpkg
+    FROM alpine:3.23.2
+    RUN apk --no-cache add docker-cli curl
+    RUN curl -fsSL "https://releases.crossplane.io/stable/v2.1.3/bin/linux_$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/')/crank" \
+        -o /usr/local/bin/crossplane \
+        && chmod +x /usr/local/bin/crossplane
+    COPY +package-build/package.xpkg /tmp/provider-signoz-package.xpkg
+    RUN --secret GITHUB_TOKEN \
+        echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_USER" --password-stdin
     RUN crossplane xpkg push -f /tmp/provider-signoz-package.xpkg ${REGISTRY}/provider-signoz:${XPKG_TAG}
 
 # Quick local build (amd64 only, no push)
