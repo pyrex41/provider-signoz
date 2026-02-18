@@ -2,12 +2,12 @@ VERSION 0.8
 
 ARG --global TERRAFORM_VERSION=1.5.7
 ARG --global TERRAFORM_PROVIDER_SOURCE=SigNoz/signoz
-ARG --global TERRAFORM_PROVIDER_VERSION=0.0.12-rc4
+ARG --global TERRAFORM_PROVIDER_VERSION=0.0.12-rc3
 ARG --global TERRAFORM_PROVIDER_DOWNLOAD_NAME=terraform-provider-signoz
 ARG --global TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX=https://github.com/pyrex41/terraform-provider-signoz/releases/download/v${TERRAFORM_PROVIDER_VERSION}
 ARG --global TERRAFORM_NATIVE_PROVIDER_BINARY=terraform-provider-signoz_v${TERRAFORM_PROVIDER_VERSION}
 ARG --global REGISTRY=ghcr.io/pyrex41
-ARG --global VERSION=v0.2.4
+ARG --global VERSION=v0.2.5
 
 build:
     ARG BUILDPLATFORM
