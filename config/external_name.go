@@ -10,7 +10,13 @@ import (
 // setExternalName() doesn't guard against empty id before calling
 // GetExternalNameFn (unlike the SDK client which does).
 var safeIdentifierFromProvider = config.ExternalName{
-	SetIdentifierArgumentFn: config.IdentifierFromProvider.SetIdentifierArgumentFn,
+	// Inject the external-name annotation value as the "id" parameter so the
+	// TF provider can adopt existing resources instead of always creating new ones.
+	SetIdentifierArgumentFn: func(base map[string]any, externalName string) {
+		if externalName != "" {
+			base["id"] = externalName
+		}
+	},
 	GetExternalNameFn: func(tfstate map[string]any) (string, error) {
 		id, ok := tfstate["id"].(string)
 		if !ok || id == "" {
