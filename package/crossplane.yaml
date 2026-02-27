@@ -4,4 +4,4 @@ metadata:
   name: provider-signoz
 spec:
   controller:
-    image: ghcr.io/pyrex41/provider-signoz:v0.2.2
+    image: ghcr.io/pyrex41/provider-signoz:v0.2.12
