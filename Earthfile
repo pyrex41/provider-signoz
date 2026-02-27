@@ -7,7 +7,7 @@ ARG --global TERRAFORM_PROVIDER_DOWNLOAD_NAME=terraform-provider-signoz
 ARG --global TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX=https://github.com/pyrex41/terraform-provider-signoz/releases/download/v${TERRAFORM_PROVIDER_VERSION}
 ARG --global TERRAFORM_NATIVE_PROVIDER_BINARY=terraform-provider-signoz_v${TERRAFORM_PROVIDER_VERSION}
 ARG --global REGISTRY=ghcr.io/pyrex41
-ARG --global VERSION=v0.2.14
+ARG --global VERSION=v0.2.15
 
 build:
     ARG BUILDPLATFORM
@@ -25,7 +25,17 @@ build:
         -o /out/provider ./cmd/provider
     SAVE ARTIFACT /out/provider
 
-# Controller runtime image — pushed separately, referenced by package/crossplane.yaml
+# Bundle crossplane.yaml + CRDs into a single /package.yaml for Crossplane package manager
+package-yaml:
+    FROM alpine:3.23.2
+    WORKDIR /work
+    COPY package/crossplane.yaml .
+    COPY package/crds/ crds/
+    RUN cat crossplane.yaml > /package.yaml && \
+        for f in crds/*.yaml; do echo '---' >> /package.yaml && cat "$f" >> /package.yaml; done
+    SAVE ARTIFACT /package.yaml
+
+# Controller runtime image with embedded package metadata
 image:
     ARG TARGETPLATFORM
     ARG TARGETOS
@@ -55,6 +65,7 @@ image:
         && rm /tmp/provider.zip
 
     COPY cluster/images/provider-signoz/terraformrc.hcl ${TF_CLI_CONFIG_FILE}
+    COPY +package-yaml/package.yaml /package.yaml
     RUN chown -R ${USER_ID}:${USER_ID} /terraform
 
     ENV TERRAFORM_VERSION=${TERRAFORM_VERSION}
