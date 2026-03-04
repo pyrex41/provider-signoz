@@ -21,7 +21,7 @@ func (mg *NotificationChannel) GetTerraformResourceType() string {
 
 // GetConnectionDetailsMapping for this NotificationChannel
 func (tr *NotificationChannel) GetConnectionDetailsMapping() map[string]string {
-	return map[string]string{"slack_configs[*].api_url": "slackConfigs[*].apiUrlSecretRef"}
+	return map[string]string{"slack_configs[*].api_url": "slackConfigs[*].apiurlSecretRef"}
 }
 
 // GetObservation of this NotificationChannel
