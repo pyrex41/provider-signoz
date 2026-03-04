@@ -14,18 +14,18 @@ import (
 	"github.com/crossplane/upjet/v2/pkg/resource/json"
 )
 
-// GetTerraformResourceType returns Terraform resource type for this Dashboard
-func (mg *Dashboard) GetTerraformResourceType() string {
-	return "signoz_dashboard"
+// GetTerraformResourceType returns Terraform resource type for this NotificationChannel
+func (mg *NotificationChannel) GetTerraformResourceType() string {
+	return "signoz_notification_channel"
 }
 
-// GetConnectionDetailsMapping for this Dashboard
-func (tr *Dashboard) GetConnectionDetailsMapping() map[string]string {
-	return nil
+// GetConnectionDetailsMapping for this NotificationChannel
+func (tr *NotificationChannel) GetConnectionDetailsMapping() map[string]string {
+	return map[string]string{"slack_configs[*].api_url": "slackConfigs[*].apiUrlSecretRef"}
 }
 
-// GetObservation of this Dashboard
-func (tr *Dashboard) GetObservation() (map[string]any, error) {
+// GetObservation of this NotificationChannel
+func (tr *NotificationChannel) GetObservation() (map[string]any, error) {
 	o, err := json.TFParser.Marshal(tr.Status.AtProvider)
 	if err != nil {
 		return nil, err
@@ -34,8 +34,8 @@ func (tr *Dashboard) GetObservation() (map[string]any, error) {
 	return base, json.TFParser.Unmarshal(o, &base)
 }
 
-// SetObservation for this Dashboard
-func (tr *Dashboard) SetObservation(obs map[string]any) error {
+// SetObservation for this NotificationChannel
+func (tr *NotificationChannel) SetObservation(obs map[string]any) error {
 	p, err := json.TFParser.Marshal(obs)
 	if err != nil {
 		return err
@@ -43,16 +43,16 @@ func (tr *Dashboard) SetObservation(obs map[string]any) error {
 	return json.TFParser.Unmarshal(p, &tr.Status.AtProvider)
 }
 
-// GetID returns ID of underlying Terraform resource of this Dashboard
-func (tr *Dashboard) GetID() string {
+// GetID returns ID of underlying Terraform resource of this NotificationChannel
+func (tr *NotificationChannel) GetID() string {
 	if tr.Status.AtProvider.ID == nil {
 		return ""
 	}
 	return *tr.Status.AtProvider.ID
 }
 
-// GetParameters of this Dashboard
-func (tr *Dashboard) GetParameters() (map[string]any, error) {
+// GetParameters of this NotificationChannel
+func (tr *NotificationChannel) GetParameters() (map[string]any, error) {
 	p, err := json.TFParser.Marshal(tr.Spec.ForProvider)
 	if err != nil {
 		return nil, err
@@ -61,8 +61,8 @@ func (tr *Dashboard) GetParameters() (map[string]any, error) {
 	return base, json.TFParser.Unmarshal(p, &base)
 }
 
-// SetParameters for this Dashboard
-func (tr *Dashboard) SetParameters(params map[string]any) error {
+// SetParameters for this NotificationChannel
+func (tr *NotificationChannel) SetParameters(params map[string]any) error {
 	p, err := json.TFParser.Marshal(params)
 	if err != nil {
 		return err
@@ -70,8 +70,8 @@ func (tr *Dashboard) SetParameters(params map[string]any) error {
 	return json.TFParser.Unmarshal(p, &tr.Spec.ForProvider)
 }
 
-// GetInitParameters of this Dashboard
-func (tr *Dashboard) GetInitParameters() (map[string]any, error) {
+// GetInitParameters of this NotificationChannel
+func (tr *NotificationChannel) GetInitParameters() (map[string]any, error) {
 	p, err := json.TFParser.Marshal(tr.Spec.InitProvider)
 	if err != nil {
 		return nil, err
@@ -80,8 +80,8 @@ func (tr *Dashboard) GetInitParameters() (map[string]any, error) {
 	return base, json.TFParser.Unmarshal(p, &base)
 }
 
-// GetInitParameters of this Dashboard
-func (tr *Dashboard) GetMergedParameters(shouldMergeInitProvider bool) (map[string]any, error) {
+// GetInitParameters of this NotificationChannel
+func (tr *NotificationChannel) GetMergedParameters(shouldMergeInitProvider bool) (map[string]any, error) {
 	params, err := tr.GetParameters()
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot get parameters for resource \"%s/%s\"", tr.GetNamespace(), tr.GetName())
@@ -110,25 +110,20 @@ func (tr *Dashboard) GetMergedParameters(shouldMergeInitProvider bool) (map[stri
 	return params, nil
 }
 
-// LateInitialize this Dashboard using its observed tfState.
+// LateInitialize this NotificationChannel using its observed tfState.
 // returns True if there are any spec changes for the resource.
-func (tr *Dashboard) LateInitialize(attrs []byte) (bool, error) {
-	params := &DashboardParameters{}
+func (tr *NotificationChannel) LateInitialize(attrs []byte) (bool, error) {
+	params := &NotificationChannelParameters{}
 	if err := json.TFParser.Unmarshal(attrs, params); err != nil {
 		return false, errors.Wrap(err, "failed to unmarshal Terraform state parameters for late-initialization")
 	}
 	opts := []resource.GenericLateInitializerOption{resource.WithZeroValueJSONOmitEmptyFilter(resource.CNameWildcard)}
-	opts = append(opts, resource.WithNameFilter("Layout"))
-	opts = append(opts, resource.WithNameFilter("PanelMap"))
-	opts = append(opts, resource.WithNameFilter("Variables"))
-	opts = append(opts, resource.WithNameFilter("Version"))
-	opts = append(opts, resource.WithNameFilter("Widgets"))
 
 	li := resource.NewGenericLateInitializer(opts...)
 	return li.LateInitialize(&tr.Spec.ForProvider, params)
 }
 
 // GetTerraformSchemaVersion returns the associated Terraform schema version
-func (tr *Dashboard) GetTerraformSchemaVersion() int {
+func (tr *NotificationChannel) GetTerraformSchemaVersion() int {
 	return 0
 }

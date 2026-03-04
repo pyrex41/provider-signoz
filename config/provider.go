@@ -8,8 +8,10 @@ import (
 
 	alertCluster "github.com/facilitygrid/provider-signoz/config/cluster/alert"
 	dashboardCluster "github.com/facilitygrid/provider-signoz/config/cluster/dashboard"
+	notificationchannelCluster "github.com/facilitygrid/provider-signoz/config/cluster/notificationchannel"
 	alertNamespaced "github.com/facilitygrid/provider-signoz/config/namespaced/alert"
 	dashboardNamespaced "github.com/facilitygrid/provider-signoz/config/namespaced/dashboard"
+	notificationchannelNamespaced "github.com/facilitygrid/provider-signoz/config/namespaced/notificationchannel"
 )
 
 const (
@@ -37,6 +39,7 @@ func GetProvider() *ujconfig.Provider {
 		// add custom config functions
 		dashboardCluster.Configure,
 		alertCluster.Configure,
+		notificationchannelCluster.Configure,
 	} {
 		configure(pc)
 	}
@@ -62,6 +65,7 @@ func GetProviderNamespaced() *ujconfig.Provider {
 		// add custom config functions
 		dashboardNamespaced.Configure,
 		alertNamespaced.Configure,
+		notificationchannelNamespaced.Configure,
 	} {
 		configure(pc)
 	}

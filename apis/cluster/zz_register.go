@@ -12,6 +12,7 @@ import (
 
 	v1alpha1 "github.com/facilitygrid/provider-signoz/apis/cluster/alert/v1alpha1"
 	v1alpha1dashboard "github.com/facilitygrid/provider-signoz/apis/cluster/dashboard/v1alpha1"
+	v1alpha1notificationchannel "github.com/facilitygrid/provider-signoz/apis/cluster/notificationchannel/v1alpha1"
 	v1alpha1cluster "github.com/facilitygrid/provider-signoz/apis/cluster/v1alpha1"
 	v1beta1 "github.com/facilitygrid/provider-signoz/apis/cluster/v1beta1"
 )
@@ -21,6 +22,7 @@ func init() {
 	AddToSchemes = append(AddToSchemes,
 		v1alpha1.SchemeBuilder.AddToScheme,
 		v1alpha1dashboard.SchemeBuilder.AddToScheme,
+		v1alpha1notificationchannel.SchemeBuilder.AddToScheme,
 		v1alpha1cluster.SchemeBuilder.AddToScheme,
 		v1beta1.SchemeBuilder.AddToScheme,
 	)

@@ -37,13 +37,16 @@ var ExternalNameConfigs = map[string]config.ExternalName{
 	"signoz_dashboard": safeIdentifierFromProvider,
 	// SigNoz alert uses provider-assigned IDs (integer from API)
 	"signoz_alert": safeIdentifierFromProvider,
+	// SigNoz notification channel uses provider-assigned IDs
+	"signoz_notification_channel": safeIdentifierFromProvider,
 }
 
 // TerraformPluginFrameworkExternalNameConfigs is for providers using
 // terraform-plugin-framework (not SDK). The SigNoz provider uses framework.
 var TerraformPluginFrameworkExternalNameConfigs = map[string]config.ExternalName{
-	"signoz_dashboard": safeIdentifierFromProvider,
-	"signoz_alert":     safeIdentifierFromProvider,
+	"signoz_dashboard":            safeIdentifierFromProvider,
+	"signoz_alert":                safeIdentifierFromProvider,
+	"signoz_notification_channel": safeIdentifierFromProvider,
 }
 
 // ExternalNameConfigurations applies all external name configs listed in the

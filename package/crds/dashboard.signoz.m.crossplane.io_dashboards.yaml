@@ -108,7 +108,7 @@ spec:
                   version:
                     description: |-
                       (String) Version of the dashboard.
-                      Version of the dashboard.
+                      Version of the dashboard. If not set, uses the server default. The server may normalize this value (e.g., v4 → v5).
                     type: string
                   widgets:
                     description: |-
@@ -178,7 +178,7 @@ spec:
                   version:
                     description: |-
                       (String) Version of the dashboard.
-                      Version of the dashboard.
+                      Version of the dashboard. If not set, uses the server default. The server may normalize this value (e.g., v4 → v5).
                     type: string
                   widgets:
                     description: |-
@@ -273,10 +273,6 @@ spec:
               rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
                 || ''Update'' in self.managementPolicies) || has(self.forProvider.variables)
                 || (has(self.initProvider) && has(self.initProvider.variables))'
-            - message: spec.forProvider.version is a required parameter
-              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
-                || ''Update'' in self.managementPolicies) || has(self.forProvider.version)
-                || (has(self.initProvider) && has(self.initProvider.version))'
             - message: spec.forProvider.widgets is a required parameter
               rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
                 || ''Update'' in self.managementPolicies) || has(self.forProvider.widgets)
@@ -358,7 +354,7 @@ spec:
                   version:
                     description: |-
                       (String) Version of the dashboard.
-                      Version of the dashboard.
+                      Version of the dashboard. If not set, uses the server default. The server may normalize this value (e.g., v4 → v5).
                     type: string
                   widgets:
                     description: |-

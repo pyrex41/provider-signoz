@@ -4,18 +4,18 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.19.0
-  name: dashboards.dashboard.signoz.crossplane.io
+  name: notificationchannels.notificationchannel.signoz.crossplane.io
 spec:
-  group: dashboard.signoz.crossplane.io
+  group: notificationchannel.signoz.crossplane.io
   names:
     categories:
     - crossplane
     - managed
     - signoz
-    kind: Dashboard
-    listKind: DashboardList
-    plural: dashboards
-    singular: dashboard
+    kind: NotificationChannel
+    listKind: NotificationChannelList
+    plural: notificationchannels
+    singular: notificationchannel
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -34,8 +34,8 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Dashboard is the Schema for the Dashboards API. Creates and manages
-          dashboard resources in SigNoz.
+        description: NotificationChannel is the Schema for the NotificationChannels
+          API. Creates and manages notification channel resources in SigNoz.
         properties:
           apiVersion:
             description: |-
@@ -55,7 +55,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: DashboardSpec defines the desired state of Dashboard
+            description: NotificationChannelSpec defines the desired state of NotificationChannel
             properties:
               deletionPolicy:
                 default: Delete
@@ -73,62 +73,86 @@ spec:
                 type: string
               forProvider:
                 properties:
-                  collapsableRowsMigrated:
-                    description: (Boolean)
-                    type: boolean
-                  description:
-                    description: |-
-                      (String) Description of the dashboard.
-                      Description of the dashboard.
-                    type: string
-                  layout:
-                    description: |-
-                      (String) Layout of the dashboard.
-                      Layout of the dashboard.
-                    type: string
                   name:
                     description: |-
-                      (String) Name of the dashboard.
-                      Name of the dashboard.
+                      (String) Name of the notification channel. Changing this forces recreation.
+                      Name of the notification channel. Changing this forces recreation.
                     type: string
-                  panelMap:
-                    description: (String)
-                    type: string
-                  source:
+                  slackConfigs:
                     description: |-
-                      (String) Source of the dashboard. By default, it is <SIGNOZ_ENDPOINT>/dashboard.
-                      Source of the dashboard. By default, it is <SIGNOZ_ENDPOINT>/dashboard.
-                    type: string
-                  tags:
-                    description: |-
-                      (List of String) Tags of the dashboard.
-                      Tags of the dashboard.
+                      (Block List) Slack notification configuration.
+                      Slack notification configuration. At most one block.
                     items:
-                      type: string
+                      properties:
+                        apiurlSecretRef:
+                          description: |-
+                            (String, Sensitive) Slack incoming webhook URL.
+                            Slack incoming webhook URL.
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        channel:
+                          description: |-
+                            (String) Slack channel to post to (e.g.
+                            Slack channel to post to (e.g. #ops-alerts).
+                          type: string
+                        iconEmoji:
+                          description: |-
+                            (String) Slack icon emoji for the bot.
+                            Slack icon emoji for the bot.
+                          type: string
+                        sendResolved:
+                          description: |-
+                            (Boolean) Whether to send a notification when the alert resolves.
+                            Whether to send a notification when the alert resolves.
+                          type: boolean
+                        text:
+                          description: |-
+                            (String) Go template for the Slack message body.
+                            Go template for the Slack message body.
+                          type: string
+                        title:
+                          description: |-
+                            (String) Go template for the Slack message title.
+                            Go template for the Slack message title.
+                          type: string
+                        username:
+                          description: |-
+                            (String) Slack username for the bot.
+                            Slack username for the bot.
+                          type: string
+                      type: object
                     type: array
-                  title:
+                  webhookConfigs:
                     description: |-
-                      (String) Title of the dashboard.
-                      Title of the dashboard.
-                    type: string
-                  uploadedGrafana:
-                    description: (Boolean)
-                    type: boolean
-                  variables:
-                    description: |-
-                      (String) Variables for the dashboard.
-                      Variables for the dashboard.
-                    type: string
-                  version:
-                    description: |-
-                      (String) Version of the dashboard.
-                      Version of the dashboard. If not set, uses the server default. The server may normalize this value (e.g., v4 → v5).
-                    type: string
-                  widgets:
-                    description: |-
-                      (String) Widgets for the dashboard.
-                      Widgets for the dashboard.
-                    type: string
+                      (Block List) Webhook notification configuration.
+                      Webhook notification configuration. At most one block.
+                    items:
+                      properties:
+                        sendResolved:
+                          description: |-
+                            (Boolean) Whether to send a notification when the alert resolves.
+                            Whether to send a notification when the alert resolves.
+                          type: boolean
+                        url:
+                          description: |-
+                            (String) Webhook endpoint URL.
+                            Webhook endpoint URL.
+                          type: string
+                      type: object
+                    type: array
                 type: object
               initProvider:
                 description: |-
@@ -143,62 +167,88 @@ spec:
                   for example because of an external controller is managing them, like an
                   autoscaler.
                 properties:
-                  collapsableRowsMigrated:
-                    description: (Boolean)
-                    type: boolean
-                  description:
-                    description: |-
-                      (String) Description of the dashboard.
-                      Description of the dashboard.
-                    type: string
-                  layout:
-                    description: |-
-                      (String) Layout of the dashboard.
-                      Layout of the dashboard.
-                    type: string
                   name:
                     description: |-
-                      (String) Name of the dashboard.
-                      Name of the dashboard.
+                      (String) Name of the notification channel. Changing this forces recreation.
+                      Name of the notification channel. Changing this forces recreation.
                     type: string
-                  panelMap:
-                    description: (String)
-                    type: string
-                  source:
+                  slackConfigs:
                     description: |-
-                      (String) Source of the dashboard. By default, it is <SIGNOZ_ENDPOINT>/dashboard.
-                      Source of the dashboard. By default, it is <SIGNOZ_ENDPOINT>/dashboard.
-                    type: string
-                  tags:
-                    description: |-
-                      (List of String) Tags of the dashboard.
-                      Tags of the dashboard.
+                      (Block List) Slack notification configuration.
+                      Slack notification configuration. At most one block.
                     items:
-                      type: string
+                      properties:
+                        apiurlSecretRef:
+                          description: |-
+                            (String, Sensitive) Slack incoming webhook URL.
+                            Slack incoming webhook URL.
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: Name of the secret.
+                              type: string
+                            namespace:
+                              description: Namespace of the secret.
+                              type: string
+                          required:
+                          - key
+                          - name
+                          - namespace
+                          type: object
+                        channel:
+                          description: |-
+                            (String) Slack channel to post to (e.g.
+                            Slack channel to post to (e.g. #ops-alerts).
+                          type: string
+                        iconEmoji:
+                          description: |-
+                            (String) Slack icon emoji for the bot.
+                            Slack icon emoji for the bot.
+                          type: string
+                        sendResolved:
+                          description: |-
+                            (Boolean) Whether to send a notification when the alert resolves.
+                            Whether to send a notification when the alert resolves.
+                          type: boolean
+                        text:
+                          description: |-
+                            (String) Go template for the Slack message body.
+                            Go template for the Slack message body.
+                          type: string
+                        title:
+                          description: |-
+                            (String) Go template for the Slack message title.
+                            Go template for the Slack message title.
+                          type: string
+                        username:
+                          description: |-
+                            (String) Slack username for the bot.
+                            Slack username for the bot.
+                          type: string
+                      required:
+                      - apiurlSecretRef
+                      type: object
                     type: array
-                  title:
+                  webhookConfigs:
                     description: |-
-                      (String) Title of the dashboard.
-                      Title of the dashboard.
-                    type: string
-                  uploadedGrafana:
-                    description: (Boolean)
-                    type: boolean
-                  variables:
-                    description: |-
-                      (String) Variables for the dashboard.
-                      Variables for the dashboard.
-                    type: string
-                  version:
-                    description: |-
-                      (String) Version of the dashboard.
-                      Version of the dashboard. If not set, uses the server default. The server may normalize this value (e.g., v4 → v5).
-                    type: string
-                  widgets:
-                    description: |-
-                      (String) Widgets for the dashboard.
-                      Widgets for the dashboard.
-                    type: string
+                      (Block List) Webhook notification configuration.
+                      Webhook notification configuration. At most one block.
+                    items:
+                      properties:
+                        sendResolved:
+                          description: |-
+                            (Boolean) Whether to send a notification when the alert resolves.
+                            Whether to send a notification when the alert resolves.
+                          type: boolean
+                        url:
+                          description: |-
+                            (String) Webhook endpoint URL.
+                            Webhook endpoint URL.
+                          type: string
+                      type: object
+                    type: array
                 type: object
               managementPolicies:
                 default:
@@ -287,122 +337,94 @@ spec:
             - forProvider
             type: object
             x-kubernetes-validations:
-            - message: spec.forProvider.collapsableRowsMigrated is a required parameter
-              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
-                || ''Update'' in self.managementPolicies) || has(self.forProvider.collapsableRowsMigrated)
-                || (has(self.initProvider) && has(self.initProvider.collapsableRowsMigrated))'
-            - message: spec.forProvider.description is a required parameter
-              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
-                || ''Update'' in self.managementPolicies) || has(self.forProvider.description)
-                || (has(self.initProvider) && has(self.initProvider.description))'
-            - message: spec.forProvider.layout is a required parameter
-              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
-                || ''Update'' in self.managementPolicies) || has(self.forProvider.layout)
-                || (has(self.initProvider) && has(self.initProvider.layout))'
             - message: spec.forProvider.name is a required parameter
               rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
                 || ''Update'' in self.managementPolicies) || has(self.forProvider.name)
                 || (has(self.initProvider) && has(self.initProvider.name))'
-            - message: spec.forProvider.title is a required parameter
-              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
-                || ''Update'' in self.managementPolicies) || has(self.forProvider.title)
-                || (has(self.initProvider) && has(self.initProvider.title))'
-            - message: spec.forProvider.uploadedGrafana is a required parameter
-              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
-                || ''Update'' in self.managementPolicies) || has(self.forProvider.uploadedGrafana)
-                || (has(self.initProvider) && has(self.initProvider.uploadedGrafana))'
-            - message: spec.forProvider.variables is a required parameter
-              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
-                || ''Update'' in self.managementPolicies) || has(self.forProvider.variables)
-                || (has(self.initProvider) && has(self.initProvider.variables))'
-            - message: spec.forProvider.widgets is a required parameter
-              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
-                || ''Update'' in self.managementPolicies) || has(self.forProvider.widgets)
-                || (has(self.initProvider) && has(self.initProvider.widgets))'
           status:
-            description: DashboardStatus defines the observed state of Dashboard.
+            description: NotificationChannelStatus defines the observed state of NotificationChannel.
             properties:
               atProvider:
                 properties:
-                  collapsableRowsMigrated:
-                    description: (Boolean)
-                    type: boolean
                   createdAt:
                     description: |-
-                      (String) Creation time of the dashboard.
-                      Creation time of the dashboard.
-                    type: string
-                  createdBy:
-                    description: |-
-                      (String) Creator of the dashboard.
-                      Creator of the dashboard.
-                    type: string
-                  description:
-                    description: |-
-                      (String) Description of the dashboard.
-                      Description of the dashboard.
+                      (String) Creation time of the notification channel.
+                      Creation time of the notification channel.
                     type: string
                   id:
-                    description: (String) Autogenerated unique ID for the dashboard.
-                    type: string
-                  layout:
-                    description: |-
-                      (String) Layout of the dashboard.
-                      Layout of the dashboard.
+                    description: (String) Unique ID for the notification channel.
                     type: string
                   name:
                     description: |-
-                      (String) Name of the dashboard.
-                      Name of the dashboard.
+                      (String) Name of the notification channel. Changing this forces recreation.
+                      Name of the notification channel. Changing this forces recreation.
                     type: string
-                  panelMap:
-                    description: (String)
-                    type: string
-                  source:
+                  slackConfigs:
                     description: |-
-                      (String) Source of the dashboard. By default, it is <SIGNOZ_ENDPOINT>/dashboard.
-                      Source of the dashboard. By default, it is <SIGNOZ_ENDPOINT>/dashboard.
-                    type: string
-                  tags:
-                    description: |-
-                      (List of String) Tags of the dashboard.
-                      Tags of the dashboard.
+                      (Block List) Slack notification configuration.
+                      Slack notification configuration. At most one block.
                     items:
-                      type: string
+                      properties:
+                        channel:
+                          description: |-
+                            (String) Slack channel to post to (e.g.
+                            Slack channel to post to (e.g. #ops-alerts).
+                          type: string
+                        iconEmoji:
+                          description: |-
+                            (String) Slack icon emoji for the bot.
+                            Slack icon emoji for the bot.
+                          type: string
+                        sendResolved:
+                          description: |-
+                            (Boolean) Whether to send a notification when the alert resolves.
+                            Whether to send a notification when the alert resolves.
+                          type: boolean
+                        text:
+                          description: |-
+                            (String) Go template for the Slack message body.
+                            Go template for the Slack message body.
+                          type: string
+                        title:
+                          description: |-
+                            (String) Go template for the Slack message title.
+                            Go template for the Slack message title.
+                          type: string
+                        username:
+                          description: |-
+                            (String) Slack username for the bot.
+                            Slack username for the bot.
+                          type: string
+                      type: object
                     type: array
-                  title:
+                  type:
                     description: |-
-                      (String) Title of the dashboard.
-                      Title of the dashboard.
+                      (String) Type of the notification channel (derived from config block).
+                      Type of the notification channel (derived from config block).
                     type: string
                   updatedAt:
                     description: |-
-                      (String) Last update time of the dashboard.
-                      Last update time of the dashboard.
+                      (String) Last update time of the notification channel.
+                      Last update time of the notification channel.
                     type: string
-                  updatedBy:
+                  webhookConfigs:
                     description: |-
-                      (String) Last updater of the dashboard.
-                      Last updater of the dashboard.
-                    type: string
-                  uploadedGrafana:
-                    description: (Boolean)
-                    type: boolean
-                  variables:
-                    description: |-
-                      (String) Variables for the dashboard.
-                      Variables for the dashboard.
-                    type: string
-                  version:
-                    description: |-
-                      (String) Version of the dashboard.
-                      Version of the dashboard. If not set, uses the server default. The server may normalize this value (e.g., v4 → v5).
-                    type: string
-                  widgets:
-                    description: |-
-                      (String) Widgets for the dashboard.
-                      Widgets for the dashboard.
-                    type: string
+                      (Block List) Webhook notification configuration.
+                      Webhook notification configuration. At most one block.
+                    items:
+                      properties:
+                        sendResolved:
+                          description: |-
+                            (Boolean) Whether to send a notification when the alert resolves.
+                            Whether to send a notification when the alert resolves.
+                          type: boolean
+                        url:
+                          description: |-
+                            (String) Webhook endpoint URL.
+                            Webhook endpoint URL.
+                          type: string
+                      type: object
+                    type: array
                 type: object
               conditions:
                 description: Conditions of the resource.

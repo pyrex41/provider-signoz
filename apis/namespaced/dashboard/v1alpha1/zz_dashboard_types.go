@@ -54,7 +54,7 @@ type DashboardInitParameters struct {
 	Variables *string `json:"variables,omitempty" tf:"variables,omitempty"`
 
 	// (String) Version of the dashboard.
-	// Version of the dashboard.
+	// Version of the dashboard. If not set, uses the server default. The server may normalize this value (e.g., v4 → v5).
 	Version *string `json:"version,omitempty" tf:"version,omitempty"`
 
 	// (String) Widgets for the dashboard.
@@ -121,7 +121,7 @@ type DashboardObservation struct {
 	Variables *string `json:"variables,omitempty" tf:"variables,omitempty"`
 
 	// (String) Version of the dashboard.
-	// Version of the dashboard.
+	// Version of the dashboard. If not set, uses the server default. The server may normalize this value (e.g., v4 → v5).
 	Version *string `json:"version,omitempty" tf:"version,omitempty"`
 
 	// (String) Widgets for the dashboard.
@@ -179,7 +179,7 @@ type DashboardParameters struct {
 	Variables *string `json:"variables,omitempty" tf:"variables,omitempty"`
 
 	// (String) Version of the dashboard.
-	// Version of the dashboard.
+	// Version of the dashboard. If not set, uses the server default. The server may normalize this value (e.g., v4 → v5).
 	// +kubebuilder:validation:Optional
 	Version *string `json:"version,omitempty" tf:"version,omitempty"`
 
@@ -232,7 +232,6 @@ type Dashboard struct {
 	// +kubebuilder:validation:XValidation:rule="!('*' in self.managementPolicies || 'Create' in self.managementPolicies || 'Update' in self.managementPolicies) || has(self.forProvider.title) || (has(self.initProvider) && has(self.initProvider.title))",message="spec.forProvider.title is a required parameter"
 	// +kubebuilder:validation:XValidation:rule="!('*' in self.managementPolicies || 'Create' in self.managementPolicies || 'Update' in self.managementPolicies) || has(self.forProvider.uploadedGrafana) || (has(self.initProvider) && has(self.initProvider.uploadedGrafana))",message="spec.forProvider.uploadedGrafana is a required parameter"
 	// +kubebuilder:validation:XValidation:rule="!('*' in self.managementPolicies || 'Create' in self.managementPolicies || 'Update' in self.managementPolicies) || has(self.forProvider.variables) || (has(self.initProvider) && has(self.initProvider.variables))",message="spec.forProvider.variables is a required parameter"
-	// +kubebuilder:validation:XValidation:rule="!('*' in self.managementPolicies || 'Create' in self.managementPolicies || 'Update' in self.managementPolicies) || has(self.forProvider.version) || (has(self.initProvider) && has(self.initProvider.version))",message="spec.forProvider.version is a required parameter"
 	// +kubebuilder:validation:XValidation:rule="!('*' in self.managementPolicies || 'Create' in self.managementPolicies || 'Update' in self.managementPolicies) || has(self.forProvider.widgets) || (has(self.initProvider) && has(self.initProvider.widgets))",message="spec.forProvider.widgets is a required parameter"
 	Spec   DashboardSpec   `json:"spec"`
 	Status DashboardStatus `json:"status,omitempty"`

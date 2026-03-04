@@ -11,6 +11,7 @@ import (
 
 	alert "github.com/facilitygrid/provider-signoz/internal/controller/cluster/alert/alert"
 	dashboard "github.com/facilitygrid/provider-signoz/internal/controller/cluster/dashboard/dashboard"
+	notificationchannel "github.com/facilitygrid/provider-signoz/internal/controller/cluster/notificationchannel/notificationchannel"
 	providerconfig "github.com/facilitygrid/provider-signoz/internal/controller/cluster/providerconfig"
 )
 
@@ -20,6 +21,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
 		alert.Setup,
 		dashboard.Setup,
+		notificationchannel.Setup,
 		providerconfig.Setup,
 	} {
 		if err := setup(mgr, o); err != nil {
@@ -35,6 +37,7 @@ func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
 		alert.SetupGated,
 		dashboard.SetupGated,
+		notificationchannel.SetupGated,
 		providerconfig.SetupGated,
 	} {
 		if err := setup(mgr, o); err != nil {

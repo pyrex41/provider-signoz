@@ -139,3 +139,40 @@ resources:
             version: (String) Version of the dashboard.
             widgets: (String) Widgets for the dashboard.
         importStatements: []
+    signoz_notification_channel:
+        subCategory: ""
+        description: Creates and manages notification channel resources in SigNoz.
+        name: signoz_notification_channel
+        title: signoz_notification_channel Resource - signoz
+        examples:
+            - name: slack_ops
+              manifest: |-
+                {
+                  "name": "slack-ops-alerts",
+                  "slack_configs": [
+                    {
+                      "api_url": "https://slack-webhook-url-placeholder.example.com",
+                      "channel": "#ops-alerts",
+                      "send_resolved": true,
+                      "title": "[{{ .Status | toUpper }}] {{ .CommonLabels.alertname }}",
+                      "text": "{{ range .Alerts }}*{{ .Labels.severity }}*: {{ .Annotations.description }}\n{{ end }}"
+                    }
+                  ]
+                }
+        argumentDocs:
+            api_url: (String, Sensitive) Slack incoming webhook URL.
+            channel: (String) Slack channel to post to (e.g. #ops-alerts).
+            created_at: (String) Creation time of the notification channel.
+            icon_emoji: (String) Slack icon emoji for the bot.
+            id: (String) Unique ID for the notification channel.
+            name: (String) Name of the notification channel. Changing this forces recreation.
+            send_resolved: (Boolean) Whether to send a notification when the alert resolves.
+            slack_configs: (Block List) Slack notification configuration.
+            text: (String) Go template for the Slack message body.
+            title: (String) Go template for the Slack message title.
+            type: (String) Type of the notification channel (derived from config block).
+            updated_at: (String) Last update time of the notification channel.
+            url: (String) Webhook endpoint URL.
+            username: (String) Slack username for the bot.
+            webhook_configs: (Block List) Webhook notification configuration.
+        importStatements: []
