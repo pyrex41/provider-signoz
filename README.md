@@ -9,11 +9,10 @@ and exposes XRM-conformant managed resources for managing SigNoz dashboards, ale
 
 | Provider Version | Terraform Provider | SigNoz Version | Notes |
 |-----------------|-------------------|----------------|-------|
-| v0.2.29 | 0.0.12-rc26 | 0.104.0 – 0.115.x | Current release; full resource support |
-| v0.2.23 | 0.0.12-rc20 | 0.104.0 – 0.110.x | Added notification channels |
-| < v0.2.10 | < 0.0.12-rc12 | < 0.104.0 | Legacy single-object API format only |
+| v0.2.29 | 0.0.12 | >= 0.104.0 | Current release; full resource support |
+| < v0.2.10 | < 0.0.12 | < 0.104.0 | Legacy single-object API format only |
 
-**Tested against:** SigNoz v0.110.1 (production), v0.115.0 (development)
+**Tested against:** SigNoz v0.110.1
 
 ## Managed Resources
 
