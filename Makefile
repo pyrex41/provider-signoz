@@ -124,16 +124,19 @@ $(TERRAFORM): check-terraform-version
 $(TERRAFORM_PROVIDER_SCHEMA): $(TERRAFORM)
 	@$(INFO) generating provider schema for $(TERRAFORM_PROVIDER_SOURCE) $(TERRAFORM_PROVIDER_VERSION)
 	@mkdir -p $(TERRAFORM_WORKDIR)
-	@# Download provider binary from GitHub release (not Terraform Registry)
+	@# Download provider binary from GitHub release and set up filesystem mirror
 	@$(INFO) downloading provider binary from $(TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX)
-	@curl -fsSL "$(TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX)/$(TERRAFORM_PROVIDER_DOWNLOAD_NAME)_$(TERRAFORM_PROVIDER_VERSION)_$(SAFEHOST_PLATFORM).zip" -o $(TERRAFORM_WORKDIR)/provider.zip && \
-	unzip -o $(TERRAFORM_WORKDIR)/provider.zip -d $(TERRAFORM_WORKDIR) && \
-	chmod +x $(TERRAFORM_WORKDIR)/$(TERRAFORM_NATIVE_PROVIDER_BINARY)
+	@MIRROR_DIR=$(TERRAFORM_WORKDIR)/mirror/registry.terraform.io/$(TERRAFORM_PROVIDER_SOURCE)/$(TERRAFORM_PROVIDER_VERSION)/$(SAFEHOST_PLATFORM); \
+	mkdir -p "$${MIRROR_DIR}" && \
+	curl -fsSL "$(TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX)/$(TERRAFORM_PROVIDER_DOWNLOAD_NAME)_$(TERRAFORM_PROVIDER_VERSION)_$(SAFEHOST_PLATFORM).zip" -o $(TERRAFORM_WORKDIR)/provider.zip && \
+	unzip -o $(TERRAFORM_WORKDIR)/provider.zip -d "$${MIRROR_DIR}" && \
+	chmod +x "$${MIRROR_DIR}/$(TERRAFORM_NATIVE_PROVIDER_BINARY)"
 	@$(OK) downloading provider binary
-	@# Use dev_overrides so terraform init is not required
+	@# Configure terraform to use filesystem mirror instead of registry
 	@echo '{"terraform":[{"required_providers":[{"provider":{"source":"'"$(TERRAFORM_PROVIDER_SOURCE)"'","version":"'"$(TERRAFORM_PROVIDER_VERSION)"'"}}],"required_version":"'"$(TERRAFORM_VERSION)"'"}]}' > $(TERRAFORM_WORKDIR)/main.tf.json
-	@echo '{"provider_installation":[{"dev_overrides":{"$(TERRAFORM_PROVIDER_SOURCE)":"'"$(TERRAFORM_WORKDIR)"'"}},{"direct":{}}]}' > $(TERRAFORM_WORKDIR)/dev.tfrc
-	@TF_CLI_CONFIG_FILE=$(TERRAFORM_WORKDIR)/dev.tfrc $(TERRAFORM) -chdir=$(TERRAFORM_WORKDIR) providers schema -json=true > $(TERRAFORM_PROVIDER_SCHEMA) 2> $(TERRAFORM_WORKDIR)/terraform-logs.txt
+	@echo '{"provider_installation":[{"filesystem_mirror":{"path":"'"$(TERRAFORM_WORKDIR)/mirror"'"}},{"direct":{}}]}' > $(TERRAFORM_WORKDIR)/mirror.tfrc
+	@TF_CLI_CONFIG_FILE=$(TERRAFORM_WORKDIR)/mirror.tfrc $(TERRAFORM) -chdir=$(TERRAFORM_WORKDIR) init > $(TERRAFORM_WORKDIR)/terraform-logs.txt 2>&1
+	@TF_CLI_CONFIG_FILE=$(TERRAFORM_WORKDIR)/mirror.tfrc $(TERRAFORM) -chdir=$(TERRAFORM_WORKDIR) providers schema -json=true > $(TERRAFORM_PROVIDER_SCHEMA) 2>> $(TERRAFORM_WORKDIR)/terraform-logs.txt
 	@$(OK) generating provider schema for $(TERRAFORM_PROVIDER_SOURCE) $(TERRAFORM_PROVIDER_VERSION)
 
 pull-docs:
