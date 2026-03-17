@@ -16,62 +16,49 @@ import (
 
 type NotificationChannelInitParameters struct {
 
-	// (String) Name of the notification channel. Changing this forces recreation.
-	// Name of the notification channel. Changing this forces recreation.
+	// Name of the notification channel.
 	Name *string `json:"name,omitempty" tf:"name,omitempty"`
 
-	// (Block List) Slack notification configuration.
 	// Slack notification configuration. At most one block.
 	SlackConfigs []SlackConfigsInitParameters `json:"slackConfigs,omitempty" tf:"slack_configs,omitempty"`
 
-	// (Block List) Webhook notification configuration.
 	// Webhook notification configuration. At most one block.
 	WebhookConfigs []WebhookConfigsInitParameters `json:"webhookConfigs,omitempty" tf:"webhook_configs,omitempty"`
 }
 
 type NotificationChannelObservation struct {
 
-	// (String) Creation time of the notification channel.
 	// Creation time of the notification channel.
 	CreatedAt *string `json:"createdAt,omitempty" tf:"created_at,omitempty"`
 
-	// (String) Unique ID for the notification channel.
 	ID *string `json:"id,omitempty" tf:"id,omitempty"`
 
-	// (String) Name of the notification channel. Changing this forces recreation.
-	// Name of the notification channel. Changing this forces recreation.
+	// Name of the notification channel.
 	Name *string `json:"name,omitempty" tf:"name,omitempty"`
 
-	// (Block List) Slack notification configuration.
 	// Slack notification configuration. At most one block.
 	SlackConfigs []SlackConfigsObservation `json:"slackConfigs,omitempty" tf:"slack_configs,omitempty"`
 
-	// (String) Type of the notification channel (derived from config block).
 	// Type of the notification channel (derived from config block).
 	Type *string `json:"type,omitempty" tf:"type,omitempty"`
 
-	// (String) Last update time of the notification channel.
 	// Last update time of the notification channel.
 	UpdatedAt *string `json:"updatedAt,omitempty" tf:"updated_at,omitempty"`
 
-	// (Block List) Webhook notification configuration.
 	// Webhook notification configuration. At most one block.
 	WebhookConfigs []WebhookConfigsObservation `json:"webhookConfigs,omitempty" tf:"webhook_configs,omitempty"`
 }
 
 type NotificationChannelParameters struct {
 
-	// (String) Name of the notification channel. Changing this forces recreation.
-	// Name of the notification channel. Changing this forces recreation.
+	// Name of the notification channel.
 	// +kubebuilder:validation:Optional
 	Name *string `json:"name,omitempty" tf:"name,omitempty"`
 
-	// (Block List) Slack notification configuration.
 	// Slack notification configuration. At most one block.
 	// +kubebuilder:validation:Optional
 	SlackConfigs []SlackConfigsParameters `json:"slackConfigs,omitempty" tf:"slack_configs,omitempty"`
 
-	// (Block List) Webhook notification configuration.
 	// Webhook notification configuration. At most one block.
 	// +kubebuilder:validation:Optional
 	WebhookConfigs []WebhookConfigsParameters `json:"webhookConfigs,omitempty" tf:"webhook_configs,omitempty"`
@@ -79,95 +66,75 @@ type NotificationChannelParameters struct {
 
 type SlackConfigsInitParameters struct {
 
-	// (String, Sensitive) Slack incoming webhook URL.
 	// Slack incoming webhook URL.
 	APIURLSecretRef v1.LocalSecretKeySelector `json:"apiurlSecretRef" tf:"-"`
 
-	// (String) Slack channel to post to (e.g.
 	// Slack channel to post to (e.g. #ops-alerts).
 	Channel *string `json:"channel,omitempty" tf:"channel,omitempty"`
 
-	// (String) Slack icon emoji for the bot.
 	// Slack icon emoji for the bot.
 	IconEmoji *string `json:"iconEmoji,omitempty" tf:"icon_emoji,omitempty"`
 
-	// (Boolean) Whether to send a notification when the alert resolves.
 	// Whether to send a notification when the alert resolves.
 	SendResolved *bool `json:"sendResolved,omitempty" tf:"send_resolved,omitempty"`
 
-	// (String) Go template for the Slack message body.
 	// Go template for the Slack message body.
 	Text *string `json:"text,omitempty" tf:"text,omitempty"`
 
-	// (String) Go template for the Slack message title.
 	// Go template for the Slack message title.
 	Title *string `json:"title,omitempty" tf:"title,omitempty"`
 
-	// (String) Slack username for the bot.
 	// Slack username for the bot.
 	Username *string `json:"username,omitempty" tf:"username,omitempty"`
 }
 
 type SlackConfigsObservation struct {
 
-	// (String) Slack channel to post to (e.g.
 	// Slack channel to post to (e.g. #ops-alerts).
 	Channel *string `json:"channel,omitempty" tf:"channel,omitempty"`
 
-	// (String) Slack icon emoji for the bot.
 	// Slack icon emoji for the bot.
 	IconEmoji *string `json:"iconEmoji,omitempty" tf:"icon_emoji,omitempty"`
 
-	// (Boolean) Whether to send a notification when the alert resolves.
 	// Whether to send a notification when the alert resolves.
 	SendResolved *bool `json:"sendResolved,omitempty" tf:"send_resolved,omitempty"`
 
-	// (String) Go template for the Slack message body.
 	// Go template for the Slack message body.
 	Text *string `json:"text,omitempty" tf:"text,omitempty"`
 
-	// (String) Go template for the Slack message title.
 	// Go template for the Slack message title.
 	Title *string `json:"title,omitempty" tf:"title,omitempty"`
 
-	// (String) Slack username for the bot.
 	// Slack username for the bot.
 	Username *string `json:"username,omitempty" tf:"username,omitempty"`
 }
 
 type SlackConfigsParameters struct {
 
-	// (String, Sensitive) Slack incoming webhook URL.
 	// Slack incoming webhook URL.
 	// +kubebuilder:validation:Optional
 	APIURLSecretRef v1.LocalSecretKeySelector `json:"apiurlSecretRef" tf:"-"`
 
-	// (String) Slack channel to post to (e.g.
 	// Slack channel to post to (e.g. #ops-alerts).
 	// +kubebuilder:validation:Optional
 	Channel *string `json:"channel,omitempty" tf:"channel,omitempty"`
 
-	// (String) Slack icon emoji for the bot.
 	// Slack icon emoji for the bot.
 	// +kubebuilder:validation:Optional
 	IconEmoji *string `json:"iconEmoji,omitempty" tf:"icon_emoji,omitempty"`
 
-	// (Boolean) Whether to send a notification when the alert resolves.
 	// Whether to send a notification when the alert resolves.
 	// +kubebuilder:validation:Optional
 	SendResolved *bool `json:"sendResolved,omitempty" tf:"send_resolved,omitempty"`
 
-	// (String) Go template for the Slack message body.
 	// Go template for the Slack message body.
 	// +kubebuilder:validation:Optional
 	Text *string `json:"text,omitempty" tf:"text,omitempty"`
 
-	// (String) Go template for the Slack message title.
 	// Go template for the Slack message title.
 	// +kubebuilder:validation:Optional
 	Title *string `json:"title,omitempty" tf:"title,omitempty"`
 
-	// (String) Slack username for the bot.
 	// Slack username for the bot.
 	// +kubebuilder:validation:Optional
 	Username *string `json:"username,omitempty" tf:"username,omitempty"`
@@ -175,34 +142,28 @@ type SlackConfigsParameters struct {
 
 type WebhookConfigsInitParameters struct {
 
-	// (Boolean) Whether to send a notification when the alert resolves.
 	// Whether to send a notification when the alert resolves.
 	SendResolved *bool `json:"sendResolved,omitempty" tf:"send_resolved,omitempty"`
 
-	// (String) Webhook endpoint URL.
 	// Webhook endpoint URL.
 	URL *string `json:"url,omitempty" tf:"url,omitempty"`
 }
 
 type WebhookConfigsObservation struct {
 
-	// (Boolean) Whether to send a notification when the alert resolves.
 	// Whether to send a notification when the alert resolves.
 	SendResolved *bool `json:"sendResolved,omitempty" tf:"send_resolved,omitempty"`
 
-	// (String) Webhook endpoint URL.
 	// Webhook endpoint URL.
 	URL *string `json:"url,omitempty" tf:"url,omitempty"`
 }
 
 type WebhookConfigsParameters struct {
 
-	// (Boolean) Whether to send a notification when the alert resolves.
 	// Whether to send a notification when the alert resolves.
 	// +kubebuilder:validation:Optional
 	SendResolved *bool `json:"sendResolved,omitempty" tf:"send_resolved,omitempty"`
 
-	// (String) Webhook endpoint URL.
 	// Webhook endpoint URL.
 	// +kubebuilder:validation:Optional
 	URL *string `json:"url" tf:"url,omitempty"`
@@ -235,7 +196,7 @@ type NotificationChannelStatus struct {
 // +kubebuilder:subresource:status
 // +kubebuilder:storageversion
 
-// NotificationChannel is the Schema for the NotificationChannels API. Creates and manages notification channel resources in SigNoz.
+// NotificationChannel is the Schema for the NotificationChannels API. <no value>
 // +kubebuilder:printcolumn:name="SYNCED",type="string",JSONPath=".status.conditions[?(@.type=='Synced')].status"
 // +kubebuilder:printcolumn:name="READY",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
 // +kubebuilder:printcolumn:name="EXTERNAL-NAME",type="string",JSONPath=".metadata.annotations.crossplane\\.io/external-name"

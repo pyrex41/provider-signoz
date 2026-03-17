@@ -35,7 +35,7 @@ spec:
     schema:
       openAPIV3Schema:
         description: NotificationChannel is the Schema for the NotificationChannels
-          API. Creates and manages notification channel resources in SigNoz.
+          API. <no value>
         properties:
           apiVersion:
             description: |-
@@ -60,20 +60,14 @@ spec:
               forProvider:
                 properties:
                   name:
-                    description: |-
-                      (String) Name of the notification channel. Changing this forces recreation.
-                      Name of the notification channel. Changing this forces recreation.
+                    description: Name of the notification channel.
                     type: string
                   slackConfigs:
-                    description: |-
-                      (Block List) Slack notification configuration.
-                      Slack notification configuration. At most one block.
+                    description: Slack notification configuration. At most one block.
                     items:
                       properties:
                         apiurlSecretRef:
-                          description: |-
-                            (String, Sensitive) Slack incoming webhook URL.
-                            Slack incoming webhook URL.
+                          description: Slack incoming webhook URL.
                           properties:
                             key:
                               type: string
@@ -85,52 +79,36 @@ spec:
                           - name
                           type: object
                         channel:
-                          description: |-
-                            (String) Slack channel to post to (e.g.
-                            Slack channel to post to (e.g. #ops-alerts).
+                          description: 'Slack channel to post to (e.g. #ops-alerts).'
                           type: string
                         iconEmoji:
-                          description: |-
-                            (String) Slack icon emoji for the bot.
-                            Slack icon emoji for the bot.
+                          description: Slack icon emoji for the bot.
                           type: string
                         sendResolved:
-                          description: |-
-                            (Boolean) Whether to send a notification when the alert resolves.
-                            Whether to send a notification when the alert resolves.
+                          description: Whether to send a notification when the alert
+                            resolves.
                           type: boolean
                         text:
-                          description: |-
-                            (String) Go template for the Slack message body.
-                            Go template for the Slack message body.
+                          description: Go template for the Slack message body.
                           type: string
                         title:
-                          description: |-
-                            (String) Go template for the Slack message title.
-                            Go template for the Slack message title.
+                          description: Go template for the Slack message title.
                           type: string
                         username:
-                          description: |-
-                            (String) Slack username for the bot.
-                            Slack username for the bot.
+                          description: Slack username for the bot.
                           type: string
                       type: object
                     type: array
                   webhookConfigs:
-                    description: |-
-                      (Block List) Webhook notification configuration.
-                      Webhook notification configuration. At most one block.
+                    description: Webhook notification configuration. At most one block.
                     items:
                       properties:
                         sendResolved:
-                          description: |-
-                            (Boolean) Whether to send a notification when the alert resolves.
-                            Whether to send a notification when the alert resolves.
+                          description: Whether to send a notification when the alert
+                            resolves.
                           type: boolean
                         url:
-                          description: |-
-                            (String) Webhook endpoint URL.
-                            Webhook endpoint URL.
+                          description: Webhook endpoint URL.
                           type: string
                       type: object
                     type: array
@@ -149,20 +127,14 @@ spec:
                   autoscaler.
                 properties:
                   name:
-                    description: |-
-                      (String) Name of the notification channel. Changing this forces recreation.
-                      Name of the notification channel. Changing this forces recreation.
+                    description: Name of the notification channel.
                     type: string
                   slackConfigs:
-                    description: |-
-                      (Block List) Slack notification configuration.
-                      Slack notification configuration. At most one block.
+                    description: Slack notification configuration. At most one block.
                     items:
                       properties:
                         apiurlSecretRef:
-                          description: |-
-                            (String, Sensitive) Slack incoming webhook URL.
-                            Slack incoming webhook URL.
+                          description: Slack incoming webhook URL.
                           properties:
                             key:
                               type: string
@@ -174,54 +146,38 @@ spec:
                           - name
                           type: object
                         channel:
-                          description: |-
-                            (String) Slack channel to post to (e.g.
-                            Slack channel to post to (e.g. #ops-alerts).
+                          description: 'Slack channel to post to (e.g. #ops-alerts).'
                           type: string
                         iconEmoji:
-                          description: |-
-                            (String) Slack icon emoji for the bot.
-                            Slack icon emoji for the bot.
+                          description: Slack icon emoji for the bot.
                           type: string
                         sendResolved:
-                          description: |-
-                            (Boolean) Whether to send a notification when the alert resolves.
-                            Whether to send a notification when the alert resolves.
+                          description: Whether to send a notification when the alert
+                            resolves.
                           type: boolean
                         text:
-                          description: |-
-                            (String) Go template for the Slack message body.
-                            Go template for the Slack message body.
+                          description: Go template for the Slack message body.
                           type: string
                         title:
-                          description: |-
-                            (String) Go template for the Slack message title.
-                            Go template for the Slack message title.
+                          description: Go template for the Slack message title.
                           type: string
                         username:
-                          description: |-
-                            (String) Slack username for the bot.
-                            Slack username for the bot.
+                          description: Slack username for the bot.
                           type: string
                       required:
                       - apiurlSecretRef
                       type: object
                     type: array
                   webhookConfigs:
-                    description: |-
-                      (Block List) Webhook notification configuration.
-                      Webhook notification configuration. At most one block.
+                    description: Webhook notification configuration. At most one block.
                     items:
                       properties:
                         sendResolved:
-                          description: |-
-                            (Boolean) Whether to send a notification when the alert resolves.
-                            Whether to send a notification when the alert resolves.
+                          description: Whether to send a notification when the alert
+                            resolves.
                           type: boolean
                         url:
-                          description: |-
-                            (String) Webhook endpoint URL.
-                            Webhook endpoint URL.
+                          description: Webhook endpoint URL.
                           type: string
                       type: object
                     type: array
@@ -295,81 +251,55 @@ spec:
               atProvider:
                 properties:
                   createdAt:
-                    description: |-
-                      (String) Creation time of the notification channel.
-                      Creation time of the notification channel.
+                    description: Creation time of the notification channel.
                     type: string
                   id:
-                    description: (String) Unique ID for the notification channel.
                     type: string
                   name:
-                    description: |-
-                      (String) Name of the notification channel. Changing this forces recreation.
-                      Name of the notification channel. Changing this forces recreation.
+                    description: Name of the notification channel.
                     type: string
                   slackConfigs:
-                    description: |-
-                      (Block List) Slack notification configuration.
-                      Slack notification configuration. At most one block.
+                    description: Slack notification configuration. At most one block.
                     items:
                       properties:
                         channel:
-                          description: |-
-                            (String) Slack channel to post to (e.g.
-                            Slack channel to post to (e.g. #ops-alerts).
+                          description: 'Slack channel to post to (e.g. #ops-alerts).'
                           type: string
                         iconEmoji:
-                          description: |-
-                            (String) Slack icon emoji for the bot.
-                            Slack icon emoji for the bot.
+                          description: Slack icon emoji for the bot.
                           type: string
                         sendResolved:
-                          description: |-
-                            (Boolean) Whether to send a notification when the alert resolves.
-                            Whether to send a notification when the alert resolves.
+                          description: Whether to send a notification when the alert
+                            resolves.
                           type: boolean
                         text:
-                          description: |-
-                            (String) Go template for the Slack message body.
-                            Go template for the Slack message body.
+                          description: Go template for the Slack message body.
                           type: string
                         title:
-                          description: |-
-                            (String) Go template for the Slack message title.
-                            Go template for the Slack message title.
+                          description: Go template for the Slack message title.
                           type: string
                         username:
-                          description: |-
-                            (String) Slack username for the bot.
-                            Slack username for the bot.
+                          description: Slack username for the bot.
                           type: string
                       type: object
                     type: array
                   type:
-                    description: |-
-                      (String) Type of the notification channel (derived from config block).
-                      Type of the notification channel (derived from config block).
+                    description: Type of the notification channel (derived from config
+                      block).
                     type: string
                   updatedAt:
-                    description: |-
-                      (String) Last update time of the notification channel.
-                      Last update time of the notification channel.
+                    description: Last update time of the notification channel.
                     type: string
                   webhookConfigs:
-                    description: |-
-                      (Block List) Webhook notification configuration.
-                      Webhook notification configuration. At most one block.
+                    description: Webhook notification configuration. At most one block.
                     items:
                       properties:
                         sendResolved:
-                          description: |-
-                            (Boolean) Whether to send a notification when the alert resolves.
-                            Whether to send a notification when the alert resolves.
+                          description: Whether to send a notification when the alert
+                            resolves.
                           type: boolean
                         url:
-                          description: |-
-                            (String) Webhook endpoint URL.
-                            Webhook endpoint URL.
+                          description: Webhook endpoint URL.
                           type: string
                       type: object
                     type: array
