@@ -135,7 +135,7 @@ $(TERRAFORM_PROVIDER_SCHEMA): $(TERRAFORM)
 	@$(OK) downloading provider binary
 	@# Configure terraform to use filesystem mirror instead of registry
 	@echo '{"terraform":[{"required_providers":[{"provider":{"source":"'"$(TERRAFORM_PROVIDER_SOURCE)"'","version":"'"$(TERRAFORM_PROVIDER_VERSION)"'"}}],"required_version":"'"$(TERRAFORM_VERSION)"'"}]}' > $(TERRAFORM_WORKDIR)/main.tf.json
-	@echo '{"provider_installation":[{"filesystem_mirror":{"path":"'"$(TERRAFORM_WORKDIR)/mirror"'"}},{"direct":{}}]}' > $(TERRAFORM_WORKDIR)/mirror.tfrc
+	@printf 'provider_installation {\n  filesystem_mirror {\n    path = "%s"\n    include = ["registry.terraform.io/*/*"]\n  }\n}\n' "$(TERRAFORM_WORKDIR)/mirror" > $(TERRAFORM_WORKDIR)/mirror.tfrc
 	@TF_CLI_CONFIG_FILE=$(TERRAFORM_WORKDIR)/mirror.tfrc $(TERRAFORM) -chdir=$(TERRAFORM_WORKDIR) init > $(TERRAFORM_WORKDIR)/terraform-logs.txt 2>&1 || { cat $(TERRAFORM_WORKDIR)/terraform-logs.txt; exit 1; }
 	@TF_CLI_CONFIG_FILE=$(TERRAFORM_WORKDIR)/mirror.tfrc $(TERRAFORM) -chdir=$(TERRAFORM_WORKDIR) providers schema -json=true > $(TERRAFORM_PROVIDER_SCHEMA) 2>> $(TERRAFORM_WORKDIR)/terraform-logs.txt || { cat $(TERRAFORM_WORKDIR)/terraform-logs.txt; exit 1; }
 	@$(OK) generating provider schema for $(TERRAFORM_PROVIDER_SOURCE) $(TERRAFORM_PROVIDER_VERSION)
