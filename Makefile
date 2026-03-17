@@ -126,8 +126,7 @@ $(TERRAFORM_PROVIDER_SCHEMA): $(TERRAFORM)
 	@mkdir -p $(TERRAFORM_WORKDIR)
 	@# Download provider binary from GitHub release (not Terraform Registry)
 	@$(INFO) downloading provider binary from $(TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX)
-	@PLATFORM=$$($(TERRAFORM) version -json | sed -n 's/.*"platform":"\([^"]*\)".*/\1/p' | tr '/' '_'); \
-	curl -fsSL "$(TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX)/$(TERRAFORM_PROVIDER_DOWNLOAD_NAME)_$(TERRAFORM_PROVIDER_VERSION)_$${PLATFORM}.zip" -o $(TERRAFORM_WORKDIR)/provider.zip && \
+	@curl -fsSL "$(TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX)/$(TERRAFORM_PROVIDER_DOWNLOAD_NAME)_$(TERRAFORM_PROVIDER_VERSION)_$(SAFEHOST_PLATFORM).zip" -o $(TERRAFORM_WORKDIR)/provider.zip && \
 	unzip -o $(TERRAFORM_WORKDIR)/provider.zip -d $(TERRAFORM_WORKDIR) && \
 	chmod +x $(TERRAFORM_WORKDIR)/$(TERRAFORM_NATIVE_PROVIDER_BINARY)
 	@$(OK) downloading provider binary
