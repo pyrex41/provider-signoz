@@ -21,10 +21,14 @@ Resources are available in both cluster-scoped and namespace-scoped variants:
 | Resource | API Group | Description |
 |----------|-----------|-------------|
 | `Dashboard` | `dashboard.signoz.crossplane.io` | Manage SigNoz dashboards (v4 and v5 query formats) |
-| `Alert` | `alert.signoz.crossplane.io` | Manage SigNoz alert rules |
+| `Alert` | `alert.signoz.crossplane.io` | Manage SigNoz alert rules (v4 and v5 query formats, v1 and v2alpha1 schema versions) |
 | `NotificationChannel` | `notificationchannel.signoz.crossplane.io` | Manage notification channels (Slack, webhook) |
 
 Namespace-scoped variants use the `.signoz.m.crossplane.io` API group suffix.
+
+### v5 Alert Support
+
+Alerts support both v4 and v5 query formats via the `version` field (default `v4`). Setting `schema_version` to `v2alpha1` enables additional fields: `evaluation` (rolling window configuration) and `notification_settings` (renotify, group_by, use_policy). Unlike dashboards, alerts do not require mutation shielding — the SigNoz API does not perform server-side migration on alert condition JSON.
 
 ### v5 Dashboard Mutation Shielding
 
